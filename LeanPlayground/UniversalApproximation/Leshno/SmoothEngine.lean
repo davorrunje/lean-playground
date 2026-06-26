@@ -18,6 +18,7 @@ closure of this span is everything (`⊤`) whenever `g` is smooth and not (every
 namespace UniversalApproximation.Leshno
 
 open Topology IteratedDerivPolynomial
+open scoped ContDiff
 
 /-- The span of dilated/translated copies of `g`, inside `C(I,ℝ)` for a compact real set `I`. -/
 def Sg (g : ℝ → ℝ) (I : Set ℝ) (hg : Continuous g) : Submodule ℝ C(↥I, ℝ) :=
@@ -39,27 +40,27 @@ argument `k` times (induction on `k`, using `iteratedDeriv_succ` to turn `g⁽�
 of `g⁽ᵏ⁻¹⁾`, and the binomial/Leibniz structure of iterated finite differences) yields the claim
 `t ↦ tᵏ · g⁽ᵏ⁾(λ t + b) ∈ closure (Sg g)`. This is a genuinely analytic uniform-convergence fact
 and is left as a documented `sorry` for this cycle. -/
-theorem deriv_pow_mem {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g) (I : Set ℝ) (hI : IsCompact I)
+theorem deriv_pow_mem {g : ℝ → ℝ} (hg : ContDiff ℝ ∞ g) (I : Set ℝ) (hI : IsCompact I)
     (k : ℕ) (lam b : ℝ) :
     (⟨fun t => (t : ℝ) ^ k * iteratedDeriv k g (lam * (t : ℝ) + b), by
-        have := hg.continuous_iteratedDeriv k le_top; fun_prop⟩ : C(↥I, ℝ))
+        have := hg.continuous_iteratedDeriv k (by exact_mod_cast le_top); fun_prop⟩ : C(↥I, ℝ))
       ∈ (Sg g I hg.continuous).topologicalClosure := by
   sorry
 
 /-- B2. A smooth non(everywhere-)polynomial has, for every order `k`, a point where the
 `k`-th derivative is nonzero. This is the contrapositive of
 `iteratedDeriv_eq_zero_imp_poly`: if `g⁽ᵏ⁾` vanished everywhere, `g` would be a polynomial. -/
-theorem exists_deriv_ne {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g)
+theorem exists_deriv_ne {g : ℝ → ℝ} (hg : ContDiff ℝ ∞ g)
     (hnp : ¬ IsPolynomialFun g) (k : ℕ) : ∃ b, iteratedDeriv k g b ≠ 0 := by
   by_contra h
   push Not at h
   obtain ⟨p, hp, _⟩ :=
-    iteratedDeriv_eq_zero_imp_poly (f := g) (n := k) (hg.of_le le_top) h
+    iteratedDeriv_eq_zero_imp_poly (f := g) (n := k) (hg.of_le (by exact_mod_cast le_top)) h
   exact hnp ⟨p, funext hp⟩
 
 /-- B3 (glue). For smooth non-polynomial `g`, the closed span of its dilations/translations is all
 of `C(I,ℝ)` on every compact set `I`. -/
-theorem smooth_engine {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g) (hnp : ¬ IsPolynomialFun g)
+theorem smooth_engine {g : ℝ → ℝ} (hg : ContDiff ℝ ∞ g) (hnp : ¬ IsPolynomialFun g)
     (I : Set ℝ) (hI : IsCompact I) :
     (Sg g I hg.continuous).topologicalClosure = ⊤ := by
   haveI : CompactSpace (↥I) := isCompact_iff_compactSpace.mp hI
@@ -71,7 +72,7 @@ theorem smooth_engine {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g) (hnp : ¬ IsPo
     have hmem := deriv_pow_mem hg I hI k 0 b
     -- the generator `t ↦ tᵏ · g⁽ᵏ⁾(0·t+b) = (g⁽ᵏ⁾ b) • (t ↦ tᵏ)`.
     have hsmul : (⟨fun t => (t : ℝ) ^ k * iteratedDeriv k g (0 * (t : ℝ) + b), by
-          have := hg.continuous_iteratedDeriv k le_top; fun_prop⟩ : C(↥I, ℝ))
+          have := hg.continuous_iteratedDeriv k (by exact_mod_cast le_top); fun_prop⟩ : C(↥I, ℝ))
         = iteratedDeriv k g b • (⟨fun t => (t : ℝ) ^ k, by fun_prop⟩ : C(↥I, ℝ)) := by
       ext t
       simp [mul_comm]
