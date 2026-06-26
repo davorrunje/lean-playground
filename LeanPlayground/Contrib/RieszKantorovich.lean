@@ -189,4 +189,26 @@ theorem Lpos_apply_of_nonneg (L : E →ₗ[ℝ] ℝ) (hL : IsOrderBounded L) {f 
   change rkSup L f⁺ - rkSup L f⁻ = rkSup L f
   rw [posPart_eq_self.mpr hf, negPart_eq_zero.mpr hf, rkSup_zero L hL, sub_zero]
 
+/-- `Lpos L hL` is nonnegative on the positive cone. -/
+theorem Lpos_nonneg (L : E →ₗ[ℝ] ℝ) (hL : IsOrderBounded L) {f : E} (hf : 0 ≤ f) :
+    0 ≤ Lpos L hL f := by
+  rw [Lpos_apply_of_nonneg L hL hf]
+  exact rkSup_nonneg L hL hf
+
+/-- On the positive cone, `Lpos L hL` dominates `L`. -/
+theorem le_Lpos (L : E →ₗ[ℝ] ℝ) (hL : IsOrderBounded L) {f : E} (hf : 0 ≤ f) :
+    L f ≤ Lpos L hL f := by
+  rw [Lpos_apply_of_nonneg L hL hf]
+  exact le_rkSup L hL hf hf (le_refl f)
+
+/-- **Riesz–Kantorovich decomposition.** Every order-bounded linear functional on a vector lattice
+is the difference of two functionals that are nonnegative on the positive cone. -/
+theorem exists_positive_decomposition (L : E →ₗ[ℝ] ℝ) (hL : IsOrderBounded L) :
+    ∃ Lp Lm : E →ₗ[ℝ] ℝ,
+      (∀ f, 0 ≤ f → 0 ≤ Lp f) ∧ (∀ f, 0 ≤ f → 0 ≤ Lm f) ∧ ∀ x, L x = Lp x - Lm x := by
+  refine ⟨Lpos L hL, Lpos L hL - L, fun f hf => Lpos_nonneg L hL hf, fun f hf => ?_, fun x => ?_⟩
+  · rw [LinearMap.sub_apply]
+    exact sub_nonneg.mpr (le_Lpos L hL hf)
+  · rw [LinearMap.sub_apply, sub_sub_cancel]
+
 end RieszKantorovich
