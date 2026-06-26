@@ -128,20 +128,20 @@ theorem denselyApproximates_of_forall_T_eq_top
     DenselyApproximates σ
 
 -- SmoothEngine.lean (univariate; work on compact intervals / C(ℝ) uniform on compacta)
-theorem deriv_pow_mem (hg : ContDiff ℝ ⊤ g) (k : ℕ) (b : ℝ) … -- B1
+theorem deriv_pow_mem (hg : ContDiff ℝ ∞ g) (k : ℕ) (b : ℝ) … -- B1
 theorem iteratedDeriv_eq_zero_imp_poly {f : ℝ → ℝ} {k : ℕ}
     (h : ∀ x, iteratedDeriv k f x = 0) : ∃ p : Polynomial ℝ, … ∧ p.natDegree < k   -- Contrib
-theorem exists_deriv_ne (hg : ContDiff ℝ ⊤ g) (hnp : ¬ IsPolynomialFun g) (k : ℕ) :
+theorem exists_deriv_ne (hg : ContDiff ℝ ∞ g) (hnp : ¬ IsPolynomialFun g) (k : ℕ) :
     ∃ b, iteratedDeriv k g b ≠ 0                                                   -- B2
-theorem smooth_engine (hg : ContDiff ℝ ⊤ g) (hnp : ¬ IsPolynomialFun g) : …       -- B3: span{g(λ·+b)} dense in C(ℝ)
+theorem smooth_engine (hg : ContDiff ℝ ∞ g) (hnp : ¬ IsPolynomialFun g) : …       -- B3: span{g(λ·+b)} dense in C(ℝ)
 
 -- Mollify.lean
 noncomputable def mollify (σ : ℝ → ℝ) (φ : ℝ → ℝ) : ℝ → ℝ := σ ⋆ φ              -- convolution
-theorem contDiff_mollify (hσ : ClassM σ) (hφ : ContDiff ℝ ⊤ φ) (hφc : HasCompactSupport φ) :
-    ContDiff ℝ ⊤ (mollify σ φ)                                                    -- E (Mathlib)
+theorem contDiff_mollify (hσ : ClassM σ) (hφ : ContDiff ℝ ∞ φ) (hφc : HasCompactSupport φ) :
+    ContDiff ℝ ∞ (mollify σ φ)                                                    -- E (Mathlib)
 theorem exists_nonpoly_mollify (hσ : ClassM σ) (hnp : ¬ IsAEPolynomial σ) :
-    ∃ φ, ContDiff ℝ ⊤ φ ∧ HasCompactSupport φ ∧ ¬ IsAEPolynomial (mollify σ φ)     -- D
-theorem mollify_mem_T (hσ : ClassM σ) (hφ : ContDiff ℝ ⊤ φ) (hφc : HasCompactSupport φ) :
+    ∃ φ, ContDiff ℝ ∞ φ ∧ HasCompactSupport φ ∧ ¬ IsAEPolynomial (mollify σ φ)     -- D
+theorem mollify_mem_T (hσ : ClassM σ) (hφ : ContDiff ℝ ∞ φ) (hφc : HasCompactSupport φ) :
     (⟨mollify-as-ridge, …⟩ : C(↥K,ℝ)) ∈ T σ K                                      -- A (HARD)
 
 -- Ridge.lean

@@ -14,6 +14,7 @@
 - All new Leshno code under `LeanPlayground/UniversalApproximation/Leshno/`, `namespace UniversalApproximation.Leshno`, each file beginning `import Mathlib` (plus intra-folder imports). **No existing file is renamed or modified** except the optional new root re-export.
 - `Contrib` code under `LeanPlayground/Contrib/`, following the established repo convention (PR #5, `RieszKantorovich.lean`): one per-contribution `namespace` matching the file (e.g. `IteratedDerivPolynomial`, `RidgePowersSpan`) — **not** under `UniversalApproximation` — a file docstring with an inline `Intended Mathlib home: …` line (no separate tracking doc), per-declaration docstrings, general typeclasses only, ≤100-char lines, lint-clean. So it is PR-extractable. Downstream Leshno files `open` the contribution namespace to use the unqualified lemma name.
 - Input space `EuclideanSpace ℝ (Fin n)`; inner product written `⟪w, x⟫` with `open scoped RealInnerProductSpace` (the `⟪·,·⟫_ℝ` suffix does NOT parse — established in the existing scaffold).
+- **Smoothness = `C^∞`, written `ContDiff ℝ ∞`, NOT `ContDiff ℝ ⊤`.** In this Mathlib the `ContDiff` regularity is `WithTop ℕ∞`, where bare `⊤` means `ω` (real-analytic) — which with `HasCompactSupport` forces `φ ≡ 0` and is unreachable by a mollification. The C^∞ level is the scoped notation `∞ = ((⊤ : ℕ∞) : WithTop ℕ∞)`. Every file stating smoothness must `open scoped ContDiff` and use `∞`. To discharge `↑k ≤ ∞` use the right cast (e.g. `by exact_mod_cast le_top`), NOT bare `le_top` on `WithTop ℕ∞`.
 - **Approximation metric is everywhere-sup** (`∀ x, |f x - g x| < ε`), never ess-sup.
 - **"Polynomial" at the M-boundary is a.e.** (`IsAEPolynomial`); the smooth/univariate layer uses everywhere-equality (`IsPolynomialFun`); a bridging lemma connects them for continuous functions.
 - **Leaf lemmas left as `sorry` this cycle:** `iteratedDeriv_eq_zero_imp_poly`, `ridgePow_span`, `deriv_pow_mem` (B1), `exists_deriv_ne` (B2), `contDiff_mollify` (E — only if the Mathlib name proves elusive), `exists_nonpoly_mollify` (D), `mollify_mem_T` (A). Each gets a full docstring (missing mathematics + "Leshno et al. 1993 / Pinkus, Acta Numerica 1999, Thm 3.1") and a single `sorry`. **Everything else is genuinely proved — no bare `sorry` in glue.**
@@ -298,7 +299,7 @@ def Sg (g : ℝ → ℝ) (I : Set ℝ) (hg : Continuous g) : Submodule ℝ C(↥
 
 /-- B1 (leaf). For smooth `g`, the function `t ↦ tᵏ · g⁽ᵏ⁾(λt+b)` lies in the closure of `Sg g`:
 it is a uniform-on-`I` limit of iterated finite differences in `λ` of `t ↦ g(λt+b)`. -/
-theorem deriv_pow_mem {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g) (I : Set ℝ) (hI : IsCompact I)
+theorem deriv_pow_mem {g : ℝ → ℝ} (hg : ContDiff ℝ ∞ g) (I : Set ℝ) (hI : IsCompact I)
     (k : ℕ) (lam b : ℝ) :
     (⟨fun t => (t : ℝ) ^ k * iteratedDeriv k g (lam * (t : ℝ) + b), by fun_prop⟩ : C(↥I, ℝ))
       ∈ (Sg g I hg.continuous).topologicalClosure := by
@@ -306,13 +307,13 @@ theorem deriv_pow_mem {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g) (I : Set ℝ) 
 
 /-- B2 (leaf). A smooth non(everywhere-)polynomial has, for every order `k`, a point where the
 `k`-th derivative is nonzero. -/
-theorem exists_deriv_ne {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g)
+theorem exists_deriv_ne {g : ℝ → ℝ} (hg : ContDiff ℝ ∞ g)
     (hnp : ¬ IsPolynomialFun g) (k : ℕ) : ∃ b, iteratedDeriv k g b ≠ 0 := by
   sorry
 
 /-- B3 (glue). For smooth non-polynomial `g`, the closed span of its dilations/translations is all
 of `C(I,ℝ)` on every compact interval `I`. -/
-theorem smooth_engine {g : ℝ → ℝ} (hg : ContDiff ℝ ⊤ g) (hnp : ¬ IsPolynomialFun g)
+theorem smooth_engine {g : ℝ → ℝ} (hg : ContDiff ℝ ∞ g) (hnp : ¬ IsPolynomialFun g)
     (I : Set ℝ) (hI : IsCompact I) :
     (Sg g I hg.continuous).topologicalClosure = ⊤ := by
   sorry
@@ -370,20 +371,20 @@ noncomputable def mollify (σ φ : ℝ → ℝ) : ℝ → ℝ :=
   fun x => ∫ y, σ (x - y) * φ y
 
 /-- E. The mollification of an `M`-class `σ` by a smooth compactly-supported kernel is smooth. -/
-theorem contDiff_mollify {σ φ : ℝ → ℝ} (hσ : ClassM σ) (hφ : ContDiff ℝ ⊤ φ)
-    (hφc : HasCompactSupport φ) : ContDiff ℝ ⊤ (mollify σ φ) := by
+theorem contDiff_mollify {σ φ : ℝ → ℝ} (hσ : ClassM σ) (hφ : ContDiff ℝ ∞ φ)
+    (hφc : HasCompactSupport φ) : ContDiff ℝ ∞ (mollify σ φ) := by
   sorry
 
 /-- D (leaf). A non-a.e.-polynomial `M`-class `σ` admits a smooth compactly-supported kernel whose
 mollification is not an everywhere polynomial. -/
 theorem exists_nonpoly_mollify {σ : ℝ → ℝ} (hσ : ClassM σ) (hnp : ¬ IsAEPolynomial σ) :
-    ∃ φ : ℝ → ℝ, ContDiff ℝ ⊤ φ ∧ HasCompactSupport φ ∧ ¬ IsPolynomialFun (mollify σ φ) := by
+    ∃ φ : ℝ → ℝ, ContDiff ℝ ∞ φ ∧ HasCompactSupport φ ∧ ¬ IsPolynomialFun (mollify σ φ) := by
   sorry
 
 /-- A (leaf, hard M-class core). For `M`-class `σ`, every dilated/translated ridge of the smooth
 mollification `σ⋆φ` lies in the continuous-core submodule `T`: it is an everywhere-sup limit on `K`
 of `genSpan` elements (Riemann sums of the convolution integral). -/
-theorem mollify_ridge_mem_T {σ φ : ℝ → ℝ} (hσ : ClassM σ) (hφ : ContDiff ℝ ⊤ φ)
+theorem mollify_ridge_mem_T {σ φ : ℝ → ℝ} (hσ : ClassM σ) (hφ : ContDiff ℝ ∞ φ)
     (hφc : HasCompactSupport φ) (K : Set E) (w : E) (b lam c : ℝ)
     (hcont : Continuous fun x : ↥K => mollify σ φ (lam * (⟪w, (x : E)⟫ + b) + c)) :
     (⟨fun x : ↥K => mollify σ φ (lam * (⟪w, (x : E)⟫ + b) + c), hcont⟩
