@@ -51,4 +51,26 @@ theorem rkSup_le (L : E →ₗ[ℝ] ℝ) {f : E} {c : ℝ} (hf : 0 ≤ f)
     (h : ∀ g, 0 ≤ g → g ≤ f → L g ≤ c) : rkSup L f ≤ c :=
   csSup_le (rkSup_set_nonempty L hf) (fun _ ⟨g, hg0, hgf, hgy⟩ => hgy ▸ h g hg0 hgf)
 
+/-- `rkSup L` is additive on the positive cone. -/
+theorem rkSup_add (L : E →ₗ[ℝ] ℝ) (hL : IsOrderBounded L) {f₁ f₂ : E}
+    (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) :
+    rkSup L (f₁ + f₂) = rkSup L f₁ + rkSup L f₂ := by
+  apply le_antisymm
+  · -- (≤): split a positive `g ≤ f₁ + f₂` via Riesz decomposition
+    refine rkSup_le L (add_nonneg hf₁ hf₂) ?_
+    intro g hg0 hgf
+    obtain ⟨a, b, hgab, ha0, haf, hb0, hbf⟩ := riesz_decomp hg0 hgf hf₁ hf₂
+    rw [hgab, map_add]
+    exact add_le_add (le_rkSup L hL hf₁ ha0 haf) (le_rkSup L hL hf₂ hb0 hbf)
+  · -- (≥): combine the two sups
+    rw [← le_sub_iff_add_le]
+    refine rkSup_le L hf₁ ?_
+    intro g₁ hg₁0 hg₁f
+    rw [le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le]
+    refine rkSup_le L hf₂ ?_
+    intro g₂ hg₂0 hg₂f
+    rw [le_sub_iff_add_le, add_comm, ← map_add]
+    exact le_rkSup L hL (add_nonneg hf₁ hf₂) (add_nonneg hg₁0 hg₂0)
+      (add_le_add hg₁f hg₂f)
+
 end RieszKantorovich
