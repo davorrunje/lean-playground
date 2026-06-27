@@ -1,6 +1,6 @@
 import Mathlib
-import LeanPlayground.Contrib.IteratedDerivPolynomial
-import LeanPlayground.Contrib.SmoothCompactAntideriv
+import NeuralNetworkProofs.ForMathlib.IteratedDerivPolynomial
+import NeuralNetworkProofs.ForMathlib.SmoothCompactAntideriv
 
 /-! # Distributional characterization of polynomials (degree ≤ d).
 Intended Mathlib home: `Mathlib/Analysis/Distribution/…` (confirm with maintainers). -/

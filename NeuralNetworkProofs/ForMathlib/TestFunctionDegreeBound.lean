@@ -1,7 +1,7 @@
 import Mathlib
-import LeanPlayground.UniversalApproximation.Leshno.MollifyDef
-import LeanPlayground.Contrib.ConvolutionPolynomial
-import LeanPlayground.Contrib.IteratedDerivPolynomial
+import NeuralNetworkProofs.UniversalApproximation.Leshno.MollifyDef
+import NeuralNetworkProofs.ForMathlib.ConvolutionPolynomial
+import NeuralNetworkProofs.ForMathlib.IteratedDerivPolynomial
 
 /-! # Uniform degree bound for polynomial mollifications (convolution degree-invariance).
 Intended Mathlib home: research leaf — no general Mathlib home yet. The argument is elementary and

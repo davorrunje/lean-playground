@@ -1,13 +1,13 @@
 import Mathlib
-import LeanPlayground.UniversalApproximation.Leshno.ClassM
-import LeanPlayground.UniversalApproximation.Leshno.Family
-import LeanPlayground.UniversalApproximation.Leshno.MollifyDef
-import LeanPlayground.Contrib.UniformRiemannConvolution
-import LeanPlayground.Contrib.ConvolutionIteratedDeriv
-import LeanPlayground.Contrib.SmoothCompactAntideriv
-import LeanPlayground.Contrib.PolynomialDistribution
-import LeanPlayground.Contrib.IteratedDerivPolynomial
-import LeanPlayground.Contrib.TestFunctionDegreeBound
+import NeuralNetworkProofs.UniversalApproximation.Leshno.ClassM
+import NeuralNetworkProofs.UniversalApproximation.Leshno.Family
+import NeuralNetworkProofs.UniversalApproximation.Leshno.MollifyDef
+import NeuralNetworkProofs.ForMathlib.UniformRiemannConvolution
+import NeuralNetworkProofs.ForMathlib.ConvolutionIteratedDeriv
+import NeuralNetworkProofs.ForMathlib.SmoothCompactAntideriv
+import NeuralNetworkProofs.ForMathlib.PolynomialDistribution
+import NeuralNetworkProofs.ForMathlib.IteratedDerivPolynomial
+import NeuralNetworkProofs.ForMathlib.TestFunctionDegreeBound
 
 /-! # Mollification: smoothness (E), the nonpolynomial mollifier (D), and the M-class membrane (A).
 
