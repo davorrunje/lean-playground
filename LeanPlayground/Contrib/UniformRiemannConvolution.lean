@@ -151,4 +151,31 @@ theorem tendstoUniformly_riemannSum_continuous
           rw [div_mul_eq_mul_div, div_lt_iff₀ (by positivity)]
           nlinarith [hε, hM]
 
+/-- Same uniform Riemann-sum convergence as `tendstoUniformly_riemannSum_continuous`, but for `f`
+only **locally bounded and a.e. continuous** (`volume (closure {t | ¬ ContinuousAt f t}) = 0`).
+The null discontinuity set controls the cells straddling discontinuities (Lebesgue's criterion).
+
+BLOCKER (research-grade, reserved as a leaf). Splitting the per-cell integrand error
+`f(s-yᵢ)·φ(yᵢ) - f(s-y)·φ(y) = f(s-yᵢ)·(φ(yᵢ)-φ(y)) + (f(s-yᵢ)-f(s-y))·φ(y)` reduces the proof to
+two terms. The **φ-variation** term is handled exactly as in the continuous case (uniform continuity
+of `φ` + the uniform bound on `f` from `hbdd` on the compact `S - Icc (-M) M`). The **f-variation**
+term `∑ᵢ φ(yᵢ) ∫_cell (f(s-yᵢ)-f(s-y)) dy` is the L¹ partition-oscillation of `y ↦ f(s-y)` and is
+the Lebesgue criterion for Riemann integrability of the *point-sampled* equispaced Riemann sum,
+**uniformly** in `s ∈ S`. Mathlib provides Riemann↔Lebesgue only through `BoxIntegral` (tagged
+prepartitions under the `Riemann` integration-params filter, e.g.
+`BoxIntegral.integrable_of_bounded_and_ae_continuousWithinAt`), which neither specialises to this
+fixed equispaced point-sampling sum nor gives a parameter-uniform tendsto; the requisite
+good/bad-cell argument (cover the null closure of the discontinuity set by an open set of small
+measure via outer regularity, uniformly continuous on the compact complement, with a thickened
+neighbourhood length bound on straddling cells, all uniform in the translate `s`) is a many-line
+measure-theory development absent from Mathlib. See `.superpowers/sdd/task-6-report.md`. -/
+theorem tendstoUniformly_riemannSum_aeContinuous
+    {f φ : ℝ → ℝ} (hbdd : ∀ R, ∃ C, ∀ t, |t| ≤ R → |f t| ≤ C)
+    (hdisc : MeasureTheory.volume (closure {t : ℝ | ¬ ContinuousAt f t}) = 0)
+    (hφ : Continuous φ) {M : ℝ} (hM : 0 < M)
+    (hsupp : Function.support φ ⊆ Set.Icc (-M) M) {S : Set ℝ} (hS : IsCompact S) :
+    TendstoUniformlyOn (fun m s => riemannSum f φ M m s)
+      (fun s => ∫ y, f (s - y) * φ y) Filter.atTop S := by
+  sorry
+
 end UniformRiemannConvolution
